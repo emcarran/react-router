@@ -48,6 +48,12 @@
 	
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(34);
+	var router = __webpack_require__(172);
+	var Router = router.Router;
+	var Route = router.Route;
+	var hashHistory = router.hashHistory;
+	var IndexRoute = router.IndexRoute;
+	var Link = router.Link;
 	
 	var CONTACTS = {
 	    0: {
@@ -67,8 +73,8 @@
 	    }
 	};
 	
-	var Link = router.Link;
-	
+	//this Component displays a single contact taken from the object above, uses Link
+	//to display dynamic links to the keys in the object above
 	var Contact = function Contact(props) {
 	    return React.createElement(
 	        'div',
@@ -82,48 +88,10 @@
 	                props.name
 	            )
 	        ),
-	        '\xA0',
+	        '\xA0-',
 	        props.phoneNumber
 	    );
 	};
-	
-	var ContactList = function ContactList(props) {
-	    var contacts = Object.keys(props.contacts).map(function (contactId, index) {
-	        var contact = props.contacts[contactId];
-	        return React.createElement(
-	            'li',
-	            { key: index },
-	            React.createElement(Contact, { id: contact.id, name: contact.name,
-	                phoneNumber: contact.phoneNumber })
-	        );
-	    });
-	    return React.createElement(
-	        'ul',
-	        null,
-	        contacts
-	    );
-	};
-	
-	var ContactListContainer = function ContactListContainer() {
-	    return React.createElement(ContactList, { contacts: CONTACTS });
-	};
-	
-	var router = __webpack_require__(172);
-	var Router = router.Router;
-	var Route = router.Route;
-	var hashHistory = router.hashHistory;
-	
-	var routes = React.createElement(
-	    Router,
-	    { history: hashHistory },
-	    React.createElement(Route, { path: '/contacts', component: ContactListContainer })
-	);
-	
-	document.addEventListener('DOMContentLoaded', function () {
-	    ReactDOM.render(routes, document.getElementById('app'));
-	});
-	
-	var IndexRoute = router.IndexRoute;
 	
 	var App = function App(props) {
 	    return React.createElement(
@@ -142,15 +110,23 @@
 	    );
 	};
 	
-	var routes = React.createElement(
-	    Router,
-	    { history: hashHistory },
-	    React.createElement(
-	        Route,
-	        { path: '/contacts', component: App },
-	        React.createElement(IndexRoute, { component: ContactListContainer })
-	    )
-	);
+	//this Components uses .map to iterate over the object (keys) contact object above
+	var ContactList = function ContactList(props) {
+	    var contacts = Object.keys(props.contacts).map(function (contactId, index) {
+	        var contact = props.contacts[contactId];
+	        return React.createElement(
+	            'li',
+	            { key: index },
+	            React.createElement(Contact, { id: contact.id, name: contact.name,
+	                phoneNumber: contact.phoneNumber })
+	        );
+	    });
+	    return React.createElement(
+	        'ul',
+	        null,
+	        contacts
+	    );
+	};
 	
 	var ContactContainer = function ContactContainer(props) {
 	    var contact = CONTACTS[props.params.contactId];
@@ -158,9 +134,26 @@
 	        phoneNumber: contact.phoneNumber });
 	};
 	
+	//this Component injects contents of the CONTACTS object as a prop into the contactList
+	var ContactListContainer = function ContactListContainer() {
+	    return React.createElement(ContactList, { contacts: CONTACTS });
+	};
+	
+	var router = __webpack_require__(172);
+	var Router = router.Router;
+	var Route = router.Route;
+	var hashHistory = router.hashHistory;
+	
+	//react router defining the route and the component to return
 	var routes = React.createElement(
 	    Router,
 	    { history: hashHistory },
+	    React.createElement(
+	        Route,
+	        { path: '/', component: App },
+	        React.createElement(IndexRoute, { component: ContactListContainer }),
+	        React.createElement(Route, { path: ':contactId', component: ContactContainer })
+	    ),
 	    React.createElement(
 	        Route,
 	        { path: '/contacts', component: App },
@@ -168,6 +161,11 @@
 	        React.createElement(Route, { path: ':contactId', component: ContactContainer })
 	    )
 	);
+	
+	//react dom loader, rendering the 'routes', into the 'app' div
+	document.addEventListener('DOMContentLoaded', function () {
+	    ReactDOM.render(routes, document.getElementById('app'));
+	});
 
 /***/ },
 /* 1 */
